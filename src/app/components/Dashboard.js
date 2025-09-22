@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [editingHR, setEditingHR] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showMobileExport, setShowMobileExport] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showAppliedModal, setShowAppliedModal] = useState(false);
   const [filters, setFilters] = useState({
@@ -167,20 +168,20 @@ export default function Dashboard() {
 
   // Enhanced filtered lists with comprehensive search and filters
   const filteredCompanies = companies.filter((c) => {
-    const searchTerm = search.toLowerCase();
-    const matchesSearch = !search || (
-      c.name?.toLowerCase().includes(searchTerm) ||
-      c.job_title?.toLowerCase().includes(searchTerm) ||
-      c.industry?.toLowerCase().includes(searchTerm) ||
-      c.job_description?.toLowerCase().includes(searchTerm) ||
-      c.location?.toLowerCase().includes(searchTerm) ||
-      c.size?.toLowerCase().includes(searchTerm) ||
-      c.status?.toLowerCase().includes(searchTerm) ||
-      c.website?.toLowerCase().includes(searchTerm) ||
-      c.email?.toLowerCase().includes(searchTerm) ||
-      c.phone?.toLowerCase().includes(searchTerm) ||
-      c.founded?.toString().includes(searchTerm)
-    );
+    const searchTerms = search.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+    const matchesSearch = !search || searchTerms.every(term => (
+      c.name?.toLowerCase().includes(term) ||
+      c.job_title?.toLowerCase().includes(term) ||
+      c.industry?.toLowerCase().includes(term) ||
+      c.job_description?.toLowerCase().includes(term) ||
+      c.location?.toLowerCase().includes(term) ||
+      c.size?.toLowerCase().includes(term) ||
+      c.status?.toLowerCase().includes(term) ||
+      c.website?.toLowerCase().includes(term) ||
+      c.email?.toLowerCase().includes(term) ||
+      c.phone?.toLowerCase().includes(term) ||
+      c.founded?.toString().includes(term)
+    ));
 
     const matchesFilters = (
       (!filters.industry || c.industry?.toLowerCase().includes(filters.industry.toLowerCase())) &&
@@ -201,19 +202,21 @@ export default function Dashboard() {
   });
 
   const filteredHrs = hrs.filter((h) => {
-    const searchTerm = search.toLowerCase();
-    return !search || (
-      h.name?.toLowerCase().includes(searchTerm) ||
-      h.company?.toLowerCase().includes(searchTerm) ||
-      h.job_title?.toLowerCase().includes(searchTerm) ||
-      h.department?.toLowerCase().includes(searchTerm) ||
-      h.email?.toLowerCase().includes(searchTerm) ||
-      h.phone?.toLowerCase().includes(searchTerm) ||
-      h.linkedin?.toLowerCase().includes(searchTerm) ||
-      h.authority?.toLowerCase().includes(searchTerm) ||
-      h.specializations?.toLowerCase().includes(searchTerm) ||
-      h.notes?.toLowerCase().includes(searchTerm)
-    );
+    const searchTerms = search.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+    const matchesSearch = !search || searchTerms.every(term => (
+      h.name?.toLowerCase().includes(term) ||
+      h.company?.toLowerCase().includes(term) ||
+      h.job_title?.toLowerCase().includes(term) ||
+      h.department?.toLowerCase().includes(term) ||
+      h.email?.toLowerCase().includes(term) ||
+      h.phone?.toLowerCase().includes(term) ||
+      h.linkedin?.toLowerCase().includes(term) ||
+      h.authority?.toLowerCase().includes(term) ||
+      h.specializations?.toLowerCase().includes(term) ||
+      h.notes?.toLowerCase().includes(term)
+    ));
+
+    return matchesSearch;
   });
 
   // Get unique values for filter options
@@ -276,6 +279,7 @@ export default function Dashboard() {
     link.click();
     document.body.removeChild(link);
     setShowExportMenu(false);
+    setShowMobileExport(false);
   };
 
   // Export to Excel (companies)
@@ -334,6 +338,7 @@ export default function Dashboard() {
       alert('Excel export failed. Please install xlsx package: npm install xlsx');
     }
     setShowExportMenu(false);
+    setShowMobileExport(false);
   };
 
   // Export to PDF
@@ -430,6 +435,7 @@ export default function Dashboard() {
       alert('PDF export failed.');
     }
     setShowExportMenu(false);
+    setShowMobileExport(false);
   };
 
   // Export to Word DOC
@@ -480,6 +486,7 @@ export default function Dashboard() {
       alert('DOC export failed.');
     }
     setShowExportMenu(false);
+    setShowMobileExport(false);
   };
 
   // Export to JSON
@@ -511,6 +518,7 @@ export default function Dashboard() {
       alert('JSON export failed.');
     }
     setShowExportMenu(false);
+    setShowMobileExport(false);
   };
 
   // Import file (CSV or Excel)
@@ -608,6 +616,8 @@ export default function Dashboard() {
     e.target.value = '';
   };
 
+  const tabTitle = tab.charAt(0).toUpperCase() + tab.slice(1);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
@@ -626,52 +636,52 @@ export default function Dashboard() {
             </div>
           </div>
 
-            {/* Search and Actions */}
-            <div className="flex items-center gap-3 w-full lg:w-auto relative">
-              {/* Search Bar */}
-              <div className="flex-1 relative">
-                <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search companies, jobs, contacts, locations..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-              </div>
+          {/* Search and Actions */}
+          <div className="flex items-center gap-3 w-full lg:w-auto relative">
+            {/* Search Bar */}
+            <div className="flex-1 relative">
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search companies, jobs, contacts, locations..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
 
-              {/* Filter Button */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-lg transition-colors ${
-                  showFilters || Object.values(filters).some(f => f !== '')
-                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                Filters
-                {Object.values(filters).some(f => f !== '') && (
-                  <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 ml-1">
-                    {Object.values(filters).filter(f => f !== '').length}
-                  </span>
-                )}
-              </button>
-            
+            {/* Filter Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-lg transition-colors ${
+                showFilters || Object.values(filters).some(f => f !== '')
+                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filters
+              {Object.values(filters).some(f => f !== '') && (
+                <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 ml-1">
+                  {Object.values(filters).filter(f => f !== '').length}
+                </span>
+              )}
+            </button>
+          
             {/* Buttons on larger screens */}
             <div className="hidden md:flex items-center gap-3">
               <label className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
@@ -755,100 +765,140 @@ export default function Dashboard() {
               </div>
             </div>
 
-              {/* Hamburger on small screens */}
-              <div className="md:hidden relative">
-                <button 
-                  className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                  onClick={() => setShowMenu(!showMenu)}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
+            {/* Hamburger on small screens */}
+            <div className="md:hidden relative">
+              <button 
+                className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                onClick={() => setShowMenu(!showMenu)}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
 
-                {showMenu && (
-                  <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-10 w-48">
-                    {/* Mobile Filters */}
-                    <button 
-                      onClick={() => { setShowFilters(!showFilters); setShowMenu(false); }}
-                      className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg cursor-pointer transition-colors w-full ${
-                        showFilters || Object.values(filters).some(f => f !== '')
-                          ? 'text-blue-700 bg-blue-50'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                      </svg>
-                      Filters
-                      {Object.values(filters).some(f => f !== '') && (
-                        <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 ml-auto">
-                          {Object.values(filters).filter(f => f !== '').length}
-                        </span>
-                      )}
-                    </button>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-10 w-48">
+                  {/* Mobile Tabs */}
+                  <p className="px-4 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">Tabs</p>
+                  <button 
+                    onClick={() => { setTab('overview'); setShowMenu(false); }}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg w-full transition-colors ${tab === 'overview' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Overview
+                  </button>
+                  <button 
+                    onClick={() => { setTab('companies'); setShowMenu(false); }}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg w-full transition-colors ${tab === 'companies' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Companies
+                  </button>
+                  <button 
+                    onClick={() => { setTab('hr'); setShowMenu(false); }}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg w-full transition-colors ${tab === 'hr' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    HR Contacts
+                  </button>
+                  <button 
+                    onClick={() => { setTab('applied'); setShowMenu(false); }}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg w-full transition-colors ${tab === 'applied' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`}
+                  >
+                    Applied Jobs
+                  </button>
 
-                    <label className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                      </svg>
-                      Import
-                      <input type="file" hidden onChange={handleImport} accept=".csv,.xlsx" />
-                    </label>
+                  <div className="border-t border-gray-100 my-2"></div>
 
-                  {/* Mobile Export Options */}
+                  {/* Mobile Filters */}
+                  <button 
+                    onClick={() => { setShowFilters(!showFilters); setShowMenu(false); }}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg cursor-pointer transition-colors w-full ${
+                      showFilters || Object.values(filters).some(f => f !== '')
+                        ? 'text-blue-700 bg-blue-50'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filters
+                    {Object.values(filters).some(f => f !== '') && (
+                      <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 ml-auto">
+                        {Object.values(filters).filter(f => f !== '').length}
+                      </span>
+                    )}
+                  </button>
+
+                  <label className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                    </svg>
+                    Import
+                    <input type="file" hidden onChange={handleImport} accept=".csv,.xlsx" />
+                  </label>
+
+                  {/* Mobile Export Dropdown */}
                   <div className="border-t border-gray-100 mt-2 pt-2">
-                    <p className="px-4 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">Export Options</p>
-                    
                     <button 
-                      onClick={() => { exportToCSV(); setShowMenu(false); }}
+                      onClick={() => setShowMobileExport(!showMobileExport)}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
                     >
-                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      Export
+                      <svg className="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={showMobileExport ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
                       </svg>
-                      CSV
                     </button>
-                    
-                    <button 
-                      onClick={() => { exportToExcel(); setShowMenu(false); }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      XLSX
-                    </button>
-                    
-                    <button 
-                      onClick={() => { exportToDoc(); setShowMenu(false); }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      DOC
-                    </button>
-                    
-                    <button 
-                      onClick={() => { exportToPDF(); setShowMenu(false); }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                      </svg>
-                      PDF
-                    </button>
-                    
-                    <button 
-                      onClick={() => { exportToJSON(); setShowMenu(false); }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                      </svg>
-                      JSON
-                    </button>
+                    {showMobileExport && (
+                      <div className="pl-4">
+                        <button 
+                          onClick={() => { exportToCSV(); setShowMenu(false); }}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          CSV
+                        </button>
+                        
+                        <button 
+                          onClick={() => { exportToExcel(); setShowMenu(false); }}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                          XLSX
+                        </button>
+                        
+                        <button 
+                          onClick={() => { exportToDoc(); setShowMenu(false); }}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          DOC
+                        </button>
+                        
+                        <button 
+                          onClick={() => { exportToPDF(); setShowMenu(false); }}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                          PDF
+                        </button>
+                        
+                        <button 
+                          onClick={() => { exportToJSON(); setShowMenu(false); }}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg w-full transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                          </svg>
+                          JSON
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -990,51 +1040,56 @@ export default function Dashboard() {
         </div>
       )}
 
-{/* Navigation Tabs */}
-<div className="bg-white rounded-lg shadow-sm mb-6">
-  <div className="flex overflow-x-auto">
-    <button
-      onClick={() => setTab('overview')}
-      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap rounded-l-lg transition-colors ${
-        tab === 'overview' 
-          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-      }`}
-    >
-      Overview
-    </button>
-    <button
-      onClick={() => setTab('companies')}
-      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
-        tab === 'companies' 
-          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-      }`}
-    >
-      Companies
-    </button>
-    <button
-      onClick={() => setTab('hr')}
-      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
-        tab === 'hr' 
-          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-      }`}
-    >
-      HR Contacts
-    </button>
-    <button
-      onClick={() => setTab('applied')}
-      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap rounded-r-lg transition-colors ${
-        tab === 'applied' 
-          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-      }`}
-    >
-      Applied Jobs
-    </button>
-  </div>
-</div>
+      {/* Navigation Tabs - Desktop Only */}
+      <div className="hidden md:block bg-white rounded-lg shadow-sm mb-6">
+        <div className="flex overflow-x-auto">
+          <button
+            onClick={() => setTab('overview')}
+            className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap rounded-l-lg transition-colors ${
+              tab === 'overview' 
+                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => setTab('companies')}
+            className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
+              tab === 'companies' 
+                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Companies
+          </button>
+          <button
+            onClick={() => setTab('hr')}
+            className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
+              tab === 'hr' 
+                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            HR Contacts
+          </button>
+          <button
+            onClick={() => setTab('applied')}
+            className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap rounded-r-lg transition-colors ${
+              tab === 'applied' 
+                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Applied Jobs
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Tab Heading */}
+      <div className="md:hidden mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">{tabTitle}</h2>
+      </div>
 
       <main>
         {tab === 'overview' && (

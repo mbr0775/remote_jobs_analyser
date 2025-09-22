@@ -23,6 +23,7 @@ export default function AddCompanyModal({ addCompany, setShowAddCompany }) {
       const companyData = {
         name: formData.get('name'),
         job_title: formData.get('jobTitle') || null,
+        job_type: formData.get('jobType') || null,
         industry: formData.get('industry') || null,
         size: formData.get('size') || null,
         founded: formData.get('founded') || null,
@@ -127,6 +128,19 @@ export default function AddCompanyModal({ addCompany, setShowAddCompany }) {
               disabled={loading}
               className="w-full border border-gray-300 p-2 rounded-md placeholder:text-gray-400 text-gray-900 focus:text-gray-900 disabled:bg-gray-100 disabled:cursor-not-allowed" 
             />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">Job Type</label>
+            <select 
+              name="jobType" 
+              disabled={loading}
+              className="w-full border border-gray-300 p-2 rounded-md text-gray-900 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              <option value="" className="text-gray-400">Select job type</option>
+              <option value="Remote" className="text-gray-900">Remote</option>
+              <option value="Onsite" className="text-gray-900">Onsite</option>
+              <option value="Hybrid" className="text-gray-900">Hybrid</option>
+            </select>
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Industry</label>
