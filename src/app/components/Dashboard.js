@@ -990,51 +990,51 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Navigation Tabs */}
-      <div className="bg-white rounded-lg shadow-sm mb-6">
-        <div className="flex">
-          <button
-            onClick={() => setTab('overview')}
-            className={`flex-1 px-6 py-4 text-sm font-medium rounded-l-lg transition-colors ${
-              tab === 'overview' 
-                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setTab('companies')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-              tab === 'companies' 
-                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Companies
-          </button>
-          <button
-            onClick={() => setTab('hr')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-              tab === 'hr' 
-                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            HR Contacts
-          </button>
-          <button
-            onClick={() => setTab('applied')}
-            className={`flex-1 px-6 py-4 text-sm font-medium rounded-r-lg transition-colors ${
-              tab === 'applied' 
-                ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
-                : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Applied Jobs
-          </button>
-        </div>
-      </div>
+{/* Navigation Tabs */}
+<div className="bg-white rounded-lg shadow-sm mb-6">
+  <div className="flex overflow-x-auto">
+    <button
+      onClick={() => setTab('overview')}
+      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap rounded-l-lg transition-colors ${
+        tab === 'overview' 
+          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      Overview
+    </button>
+    <button
+      onClick={() => setTab('companies')}
+      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
+        tab === 'companies' 
+          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      Companies
+    </button>
+    <button
+      onClick={() => setTab('hr')}
+      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors ${
+        tab === 'hr' 
+          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      HR Contacts
+    </button>
+    <button
+      onClick={() => setTab('applied')}
+      className={`flex-1 px-4 sm:px-6 py-4 text-sm font-medium whitespace-nowrap rounded-r-lg transition-colors ${
+        tab === 'applied' 
+          ? 'bg-white text-gray-900 border-b-2 border-blue-600' 
+          : 'bg-gray-50 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+      }`}
+    >
+      Applied Jobs
+    </button>
+  </div>
+</div>
 
       <main>
         {tab === 'overview' && (
